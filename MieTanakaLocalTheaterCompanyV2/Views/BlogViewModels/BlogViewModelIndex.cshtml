@@ -1,0 +1,118 @@
+﻿@model MieTanakaLocalTheaterCompanyV2.Models.BlogViewModel
+@using MieTanakaLocalTheaterCompanyV2.Models
+
+
+@{
+    ViewBag.Title = "Blog Details";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>Title @Html.DisplayFor(m => m.BlogTitle)</h4>
+        </div>
+    </div>
+    <!-- Author -->
+    <div class="row">
+        <div class="col-lg-12">
+            <p>
+                by @Html.DisplayFor(m => m.ApplicationUser.Forename)
+            </p>
+            </div>
+        </div>
+ 
+    <!-- Date/Time -->
+    <div class="row">
+        <div class="col-lg-12">
+            <p><span class="glyphicon glyphicon-time"></span> Posted on @Html.DisplayFor(m => m.BlogDate)</p>
+            <hr>
+            </div>
+        </div>
+    
+
+
+    <!-- Post Content -->
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrap">
+                <p>@Html.DisplayFor(m => m.BlogContent)</p>
+            </div>
+            </div>
+        </div>
+
+    <hr>
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>Comments</h4>
+            <hr />
+            </div>
+        </div>
+<div class="row">
+    <div class="col-lg-12">
+        @foreach (Comment cm in Model.Comments)
+        {
+            <div class="media">
+                <a class="pull-left" href="#">
+                    <img class="media-object" src="http://placehold.it/64x64" alt="">
+                </a>
+                <div class="media-body">
+                    <h4 class="media-heading">
+                        @cm.CommentTitle
+                        <small>@cm.CommentedDate</small>
+                        <small>@cm.ApplicationUser.Forename</small>
+                    </h4>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <p>@cm.CommentBody</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+                    @if (User.IsInRole("Administrator") || cm.ApplicationUser.UserName.ToLower() == this.User.Identity.Name.ToLower())
+                    {
+                        @Html.ActionLink("Delete", "Delete", "Comments", new { id = cm.CommentId },
+   new { onclick = "return confirm('Are you sure you wish to delete this blog?');" })
+                    }
+                    @if (User.IsInRole("Administrator") || cm.ApplicationUser.UserName.ToLower() == this.User.Identity.Name.ToLower())
+                    {
+                        @Html.ActionLink("Edit", "Edit", "Comments", new { id = cm.CommentId }, null)
+                    }
+                </div>
+            </div>
+
+        }
+        <br />
+    </div>
+    </div>
+    </div>
+@if(User.Identity.IsAuthenticated){ 
+using (Html.BeginForm("AddCommentCreate", "BlogViewModels", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <p> @Html.Label("Addd Comment")
+        <div class="form-group">
+            <div class="col-md-1">
+                @Html.Label("Title")
+            </div>
+            <div class="col-md-11">
+                @Html.TextArea("CommentTitle", null, 1, 20, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <br/><br/>
+        <div class="form-group">
+            <div class="col-md-1">
+                @Html.Label("Comment")
+                </div>
+             <div class="col-md-11">
+                @Html.TextArea("CommentBody", null, 5, 50, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+          <input type="submit" value="submit" />
+    </p>
+}            
+}
+@if (!User.Identity.IsAuthenticated){@Html.ActionLink("AddComment", "AddCommentCreate", "BlogViewModels")} | @Html.ActionLink("Back to Blog list", "Index", "Blogs")
+
+

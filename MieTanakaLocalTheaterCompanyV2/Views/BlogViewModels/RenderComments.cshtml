@@ -1,0 +1,31 @@
+﻿@using MieTanakaLocalTheaterCompanyV2.Models;
+@model IEnumerable<Comment>
+
+@{
+    ViewBag.Title = "RenderComments";
+}
+
+
+<h4>Comments</h4>
+<hr />
+@foreach (Comment cm in Model)
+{
+    <div class="media">
+        <a class="pull-left" href="#">
+            <img class="media-object" src="http://placehold.it/64x64" alt="">
+        </a>
+        <div class="media-body">
+            <h4 class="media-heading">
+                @cm.CommentTitle
+                <small>@cm.CommentedDate</small>
+            </h4>
+                <p> @cm.CommentBody</p>
+                <small>@cm.ApplicationUser.UserName</small>
+            
+        </div>
+    </div> 
+}
+<br/>
+@Html.ActionLink("AddComment", "AddCommentCreate", "BlogViewModels")
+
+

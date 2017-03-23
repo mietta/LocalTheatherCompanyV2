@@ -1,0 +1,52 @@
+﻿@model MieTanakaLocalTheaterCompanyV2.Models.Comment
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Add Comment</h4>
+        
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+ <!--       <div class="form-group">
+            @Html.LabelFor(model => model.CommentedDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CommentedDate, new { htmlAttributes = new { @class = "form-control", @readonly = "true" } })
+                @Html.ValidationMessageFor(model => model.CommentedDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+-->
+        <div class="form-group">
+            @Html.LabelFor(model => model.CommentTitle, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CommentTitle, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CommentTitle, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CommentBody, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.CommentBody, 10,100,new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CommentBody, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+            <!--    <input type="hidden" name="ReturnUrl" value = "@Request.QueryString["ReturnUrl"]"/>-->
+                <input type="submit" value="AddComment" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "BlogViewModelIndex","BlogViewModels",new { blogid = Model.BlogId },null)
+</div>
+
+
+  
+

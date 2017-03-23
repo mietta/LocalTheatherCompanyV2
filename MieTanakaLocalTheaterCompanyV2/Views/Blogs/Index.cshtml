@@ -1,0 +1,108 @@
+﻿
+@model PagedList.IPagedList<MieTanakaLocalTheaterCompanyV2.Models.Blog>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+    @{
+        ViewBag.Title = "Blogs Index";
+    }
+
+    <h4>
+        @if (User.IsInRole("Administrator") || User.IsInRole("Staff"))
+        {
+            @Html.ActionLink("Post a Blog", "Create", "Blogs")
+        }
+    </h4>
+
+    <h4>List of Blogs</h4>
+
+    @using (Html.BeginForm("Index", "Blogs", FormMethod.Get))
+    {
+        <p>
+            @Html.DropDownList("categoryChoice", "AllCategory")
+            Title:@Html.TextBox("searchString")
+
+            <input type="submit" value="Filter" />
+        </p>
+    }
+
+    <table class="table">
+        <tr>
+            @if (User.IsInRole("Administrator") || User.IsInRole("Staff"))
+            {
+                <th>
+                    @Html.ActionLink("ForeName", "Index", new { sortOrder = ViewBag.NameSortParm })
+                </th>
+            }
+            <th>
+                Category
+            </th>
+            <th>
+                Blog Title
+            </th>
+            <th>
+                Blog Content
+            </th>
+            <th>
+                @Html.ActionLink("Date", "Index", new { sortOrder = ViewBag.DateSortParm })
+            </th>
+            @if (User.IsInRole("Administrator") || User.IsInRole("Staff"))
+            {
+
+                @Html.Label("Approved")
+
+            }
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                @if (User.IsInRole("Administrator") || User.IsInRole("Staff"))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ApplicationUser.Forename)
+                    </td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BlogTitle)
+                <td>
+                    @Html.DisplayFor(modelItem => item.BlogContent).ToString().Substring(0, 30)......
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BlogDate)
+                </td>
+                <th>
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Staff"))
+                    {
+
+                        @Html.DisplayFor(modelItem => item.BlogApproved)
+
+                    }
+                </th>
+                <td>
+                    @Html.ActionLink("Detail", "BlogViewModelIndex", "BlogViewModels", new { blogid = item.BlogId }, null)
+                    @if (User.IsInRole("Administrator") || item.ApplicationUser.UserName.ToLower() == this.User.Identity.Name.ToLower())
+                    {
+
+                        @Html.ActionLink("Delete", "Delete", new { id = item.BlogId },
+              new { onclick = "return confirm('Are you sure you wish to delete this blog?');" })
+                    }
+                    @if (User.IsInRole("Administrator") || item.ApplicationUser.UserName.ToLower() == this.User.Identity.Name.ToLower())
+                {
+                        @Html.ActionLink("Edit", "Edit", new { id = item.BlogId })
+                    }
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

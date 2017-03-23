@@ -1,0 +1,58 @@
+﻿@model MieTanakaLocalTheaterCompanyV2.Models.Comment
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Comment</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ApplicationUser.Forename)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ApplicationUser.Forename)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Blog.BlogTitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Blog.BlogTitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CommentedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CommentedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CommentTitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CommentTitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CommentBody)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CommentBody)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.CommentId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

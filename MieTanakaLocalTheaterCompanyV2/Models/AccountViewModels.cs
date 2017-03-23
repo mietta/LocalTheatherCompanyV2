@@ -64,13 +64,25 @@ namespace MieTanakaLocalTheaterCompanyV2.Models
 
     public class RegisterViewModel
     {
+        
+        
+        public string Forename { get; set; }      
+        public string Surname { get; set; }      
+        public string Street { get; set; }        
+        public string Town { get; set; }        
+        [Display(Name = "Post code")]
+        public string Postcode { get; set; }
+        public string PhoneNumber { get; set; }
+        [Display(Name = "User Name")]
+        public string UserName { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -89,7 +101,7 @@ namespace MieTanakaLocalTheaterCompanyV2.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }

@@ -9,6 +9,30 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MieTanakaLocalTheaterCompanyV2.Models;
+using System.Configuration;
+using Microsoft.AspNet.Identity.EntityFramework;
+using static MieTanakaLocalTheaterCompanyV2.ApplicationSignInManager;
+/// <summary>
+/// Name:Mie Tanaka
+/// Name:02/03/2017
+/// Description: allows users log in and register their account
+/// 
+/// public ActionResult Login
+/// Returns empty editable Account/Login view
+/// 
+/// public ActionReslut Login
+/// Returns back to Home/Index if login succesful
+/// If error, keep returning Login view with current input detail
+///
+/// private void CreateAdminIfNeeded
+/// cretate AddminAccount specifed in web config if required.
+/// 
+/// public ActionReslut Register()
+/// Returns blank Account/Register view
+/// 
+/// public AtionResult Register(RegisterViewModel model)
+/// Returns Home Index view after successfully save input user data,
+/// If error, returns Register view with current input with error message
 
 namespace MieTanakaLocalTheaterCompanyV2.Controllers
 {
@@ -57,29 +81,33 @@ namespace MieTanakaLocalTheaterCompanyV2.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            //Create the Admin account using setting in Web.config(if needed)
+            CreateAdminIfNeeded();
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+                     return View();
+ //           return Redirect(ControllerContext.HttpContext.Request.UrlReferrer.ToString());
         }
 
         //
         // POST: /Account/Login
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-
+            
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+
+                    return RedirectToLocal(returnUrl);/*RedirectToAction("Index","Home");*/
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -151,10 +179,24 @@ namespace MieTanakaLocalTheaterCompanyV2.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser {
+                    Forename = model.Forename,
+                    Surname = model.Surname,
+                    Street = model.Street,
+                    Town = model.Town,
+                    Postcode = model.Postcode,
+                    PhoneNumber = model.PhoneNumber,
+                    UserName = model.Email,
+                    Email = model.Email ,
+                };
+
+                
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    //add user to the role to make User default
+                    result = UserManager.AddToRole(user.Id, RoleName.ROLE_USER);
+
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -403,6 +445,9 @@ namespace MieTanakaLocalTheaterCompanyV2.Controllers
             return View();
         }
 
+        
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -478,6 +523,62 @@ namespace MieTanakaLocalTheaterCompanyV2.Controllers
                     properties.Dictionary[XsrfKey] = UserId;
                 }
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
+            }
+        }
+        #endregion
+
+        // Utility
+
+        // Add RoleManager
+        #region public ApplicationRoleManager RoleManager
+        private ApplicationRoleManager _roleManager;
+        public ApplicationRoleManager RoleManager
+        {
+            get
+            {
+                return _roleManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
+            }
+            private set
+            {
+                _roleManager = value;
+            }
+        }
+        #endregion
+
+        // Add CreateAdminIfNeeded
+        #region private void CreateAdminIfNeeded()
+        private void CreateAdminIfNeeded()
+        {
+            // Get Admin Account
+            string AdminUserName = ConfigurationManager.AppSettings["AdminUserName"];
+            string AdminPassword = ConfigurationManager.AppSettings["AdminPassword"];
+
+            // See if Admin exists
+            var objAdminUser = UserManager.FindByEmail(AdminUserName);
+
+            if (objAdminUser == null)
+            {
+                //See if the Admin role exists
+                if (!RoleManager.RoleExists("Administrator"))
+                {
+                    // Create the Admin Role (if needed)
+                    IdentityRole objAdminRole = new IdentityRole("Administrator");
+                    RoleManager.Create(objAdminRole);
+                }
+
+                // Create Admin user
+                var objNewAdminUser = new ApplicationUser {
+ /*                 Forename = "Appliation",
+                    Surename = "Admin",
+                    Street = "any street",
+                    Town = "any town",
+                    Postcode = "any postcode",
+                    PhoneNumber = "any phone Number",                   
+*/
+                    UserName = AdminUserName, Email = AdminUserName };
+                var AdminUserCreateResult = UserManager.Create(objNewAdminUser, AdminPassword);
+                // Put user in Admin role
+                UserManager.AddToRole(objNewAdminUser.Id, "Administrator");
             }
         }
         #endregion

@@ -1,0 +1,27 @@
+﻿@using MieTanakaLocalTheaterCompanyV2.Models;
+@model Blog
+
+@{
+    ViewBag.Title = "RenderBlog";
+}
+
+<!-- Blog Post -->
+<!-- Title -->
+<h4>Title @Html.DisplayFor(m => m.BlogTitle)</h4>
+
+<!-- Author -->
+<p class="lead">
+    by @Html.DisplayFor(m => m.ApplicationUser.Forename)
+</p>
+<!-- Date/Time -->
+<p><span class="glyphicon glyphicon-time"></span> Posted on @Html.DisplayFor(m => m.BlogDate)</p>
+
+<hr>
+
+<!-- Post Content -->
+@Html.DisplayFor(m => m.BlogContent)
+
+<hr>
+
+
+
